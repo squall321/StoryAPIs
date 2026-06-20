@@ -1,0 +1,41 @@
+# ---- Python / backend ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.sqlite3
+*.db
+
+# ---- Node / frontend ----
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# ---- Env & secrets ----
+.env
+.env.*
+!.env.example
+*.key
+
+# ---- Data caches (large; not committed) ----
+data/cache/
+data/dumps/
+*.parquet
+
+# ---- Editor / OS ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# ---- Logs ----
+*.log
+logs/
