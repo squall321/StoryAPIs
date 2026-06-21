@@ -80,5 +80,13 @@ class ConnectorManager:
                 elapsed_ms=int((time.perf_counter() - started) * 1000),
             )
 
+    async def fulltext(self, entity_id: str) -> str | None:
+        """Resolve a global entity id ("{source}:{record}") to its full text."""
+        source_id, _, record_id = entity_id.partition(":")
+        connector = self.connectors.get(source_id)
+        if connector is None or not record_id:
+            return None
+        return await connector.fulltext(record_id)
+
     async def aclose(self) -> None:
         await self.client.aclose()

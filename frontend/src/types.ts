@@ -30,6 +30,13 @@ export interface MediaRef {
   caption?: string | null
 }
 
+export interface GeoRef {
+  label?: string | null
+  latitude?: number | null
+  longitude?: number | null
+  country?: string | null
+}
+
 export type EntityType =
   | 'person' | 'place' | 'event' | 'period' | 'work' | 'deity'
   | 'creature' | 'artifact' | 'organization' | 'concept' | 'motif' | 'other'
@@ -45,6 +52,7 @@ export interface StoryEntity {
   languages: string[]
   tags: string[]
   time?: TimeRef | null
+  places: GeoRef[]
   media: MediaRef[]
   provenance: Provenance
   extra: Record<string, unknown>
@@ -85,4 +93,16 @@ export interface SourceMeta {
   auth_required: boolean
   enabled: boolean
   notes?: string | null
+}
+
+export interface SourcesResponse {
+  count: number
+  sources: SourceMeta[]
+}
+
+export interface FullTextResponse {
+  id: string
+  text: string
+  length: number
+  truncated: boolean
 }

@@ -1,4 +1,4 @@
-import type { SearchResponse, SourceMeta } from './types'
+import type { FullTextResponse, SearchResponse, SourcesResponse } from './types'
 
 // Same-origin '/api' in dev (proxied by Vite) and in prod (served behind one host).
 const BASE = import.meta.env.VITE_API_BASE ?? '/api'
@@ -21,6 +21,10 @@ export function search(
   return getJSON<SearchResponse>(`/search?${params.toString()}`, opts.signal)
 }
 
-export function listSources(signal?: AbortSignal): Promise<{ count: number; sources: SourceMeta[] }> {
-  return getJSON('/sources', signal)
+export function listSources(signal?: AbortSignal): Promise<SourcesResponse> {
+  return getJSON<SourcesResponse>('/sources', signal)
+}
+
+export function fetchFullText(id: string, signal?: AbortSignal): Promise<FullTextResponse> {
+  return getJSON<FullTextResponse>(`/fulltext?id=${encodeURIComponent(id)}`, signal)
 }

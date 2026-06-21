@@ -1,56 +1,74 @@
 :root {
-  --bg: #faf9fb;
-  --panel: #ffffff;
-  --text: #2c2a33;
-  --muted: #6b6375;
-  --heading: #100c1a;
-  --border: #e7e5ea;
-  --accent: #7c3aed;
-  --accent-bg: rgba(124, 58, 237, 0.08);
-  --accent-border: rgba(124, 58, 237, 0.35);
-  --shadow: rgba(20, 14, 40, 0.06) 0 6px 20px -6px;
-  --radius: 12px;
+  /* Warm "paper & ink" literary palette */
+  --bg: #f4f1ea;
+  --panel: #fffdf8;
+  --panel-2: #faf7f0;
+  --text: #322d26;
+  --muted: #857c6f;
+  --heading: #1a1611;
+  --border: #e6dfd2;
+  --border-2: #d8cfbe;
+  --accent: #8a5a2b;
+  --accent-ink: #6f4620;
+  --accent-soft: rgba(138, 90, 43, 0.1);
+  --accent-border: rgba(138, 90, 43, 0.32);
+  --shadow-sm: 0 1px 2px rgba(26, 22, 17, 0.05);
+  --shadow: 0 8px 28px -12px rgba(26, 22, 17, 0.18);
+  --shadow-lg: 0 24px 60px -20px rgba(26, 22, 17, 0.35);
+  --radius: 14px;
+  --radius-sm: 9px;
 
-  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --serif: 'Noto Serif KR', 'Nanum Myeongjo', 'Apple SD Gothic Neo', Georgia,
+    'Times New Roman', serif;
+  --sans: system-ui, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic',
+    sans-serif;
+
+  font: 16px/1.6 var(--sans);
   color: var(--text);
   background: var(--bg);
   color-scheme: light dark;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #131119;
-    --panel: #1c1a24;
-    --text: #d9d6e0;
-    --muted: #948da3;
-    --heading: #f4f2f8;
-    --border: #2c2935;
-    --accent: #b794f6;
-    --accent-bg: rgba(183, 148, 246, 0.12);
-    --accent-border: rgba(183, 148, 246, 0.4);
-    --shadow: rgba(0, 0, 0, 0.4) 0 8px 24px -8px;
+    --bg: #15130f;
+    --panel: #1e1b16;
+    --panel-2: #211e18;
+    --text: #ddd6c8;
+    --muted: #9a9081;
+    --heading: #f2ece0;
+    --border: #2e2a22;
+    --border-2: #3a352b;
+    --accent: #cd9b66;
+    --accent-ink: #e0b78a;
+    --accent-soft: rgba(205, 155, 102, 0.13);
+    --accent-border: rgba(205, 155, 102, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 28px 70px -24px rgba(0, 0, 0, 0.8);
   }
 }
 
 * {
   box-sizing: border-box;
 }
-
 body {
   margin: 0;
   min-height: 100svh;
 }
-
 a {
-  color: var(--accent);
+  color: var(--accent-ink);
   text-decoration: none;
 }
 a:hover {
   text-decoration: underline;
 }
-
 button {
   font: inherit;
   cursor: pointer;
+}
+::selection {
+  background: var(--accent-soft);
 }

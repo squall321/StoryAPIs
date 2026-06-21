@@ -60,6 +60,18 @@ class PoetryDBConnector(BaseConnector):
             return []
         return [self._to_hit(poem, query) for poem in data[:limit]]
 
+    async def fulltext(self, record_id: str) -> str | None:
+        # record_id is "Author::Title"; look the poem up by title.
+        title = record_id.split("::", 1)[-1].replace("_", " ")
+        resp = await self.client.get(f"{_BASE}/title/{title}")
+        if resp.status_code == 404:
+            return None
+        resp.raise_for_status()
+        data = resp.json()
+        if isinstance(data, dict) or not data:
+            return None
+        return "\n".join(data[0].get("lines", []) or []) or None
+
     def _to_hit(self, poem: dict, query: str) -> SearchHit:
         lines = poem.get("lines", []) or []
         author = poem.get("author", "Unknown")

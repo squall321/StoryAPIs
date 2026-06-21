@@ -5,11 +5,17 @@ Importing this package imports every connector module, which triggers their
 """
 
 from app.connectors import (  # noqa: F401  (imported for side-effect: registration)
+    alquran,
+    artic,
+    cleveland,
     gutendex,
     met,
     openlibrary,
     poetrydb,
+    sefaria,
+    suttacentral,
     wikidata,
+    wikipedia,
 )
 from app.connectors.base import (
     BaseConnector,

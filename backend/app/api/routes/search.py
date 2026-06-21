@@ -10,6 +10,9 @@ from app.models.entities import SearchResponse, StoryEntity
 
 router = APIRouter(tags=["search"])
 
+# Cap full-text payloads so a multi-megabyte book doesn't blow up the response.
+_FULLTEXT_CAP = 200_000
+
 
 @router.get("/search", response_model=SearchResponse)
 async def search(
@@ -24,6 +27,24 @@ async def search(
         [s.strip() for s in sources.split(",") if s.strip()] if sources else None
     )
     return await manager.search(q, source_ids=source_ids, limit=limit)
+
+
+@router.get("/fulltext")
+async def fulltext(
+    id: str = Query(..., description='entity id, e.g. "gutendex:1342"'),
+    manager: ConnectorManager = Depends(get_manager),
+) -> dict:
+    text = await manager.fulltext(id)
+    if text is None:
+        raise HTTPException(status_code=404, detail="no full text for this item")
+    length = len(text)
+    truncated = length > _FULLTEXT_CAP
+    return {
+        "id": id,
+        "text": text[:_FULLTEXT_CAP],
+        "length": length,
+        "truncated": truncated,
+    }
 
 
 @router.get("/sources/{source_id}/items/{record_id:path}", response_model=StoryEntity)

@@ -51,6 +51,10 @@ class OpenLibraryConnector(BaseConnector):
                 "cover_i,subject,language,ia",
             },
         )
+        # Open Library rejects some queries (e.g. short CJK terms) with 422;
+        # treat that as "no results" rather than failing the federated search.
+        if resp.status_code == 422:
+            return []
         resp.raise_for_status()
         docs = resp.json().get("docs", [])
         return [SearchHit(entity=self._to_entity(d)) for d in docs[:limit]]

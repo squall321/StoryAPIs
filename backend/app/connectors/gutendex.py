@@ -55,6 +55,17 @@ class GutendexConnector(BaseConnector):
         resp.raise_for_status()
         return self._to_entity(resp.json())
 
+    async def fulltext(self, record_id: str) -> str | None:
+        entity = await self.fetch(record_id)
+        if entity is None:
+            return None
+        url = entity.extra.get("fulltext_url")
+        if not url:
+            return None
+        resp = await self.client.get(url)
+        resp.raise_for_status()
+        return resp.text
+
     def _to_entity(self, book: dict) -> StoryEntity:
         authors = book.get("authors", [])
         author_names = [a.get("name", "") for a in authors if a.get("name")]

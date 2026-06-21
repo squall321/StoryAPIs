@@ -65,6 +65,10 @@ class BaseConnector(ABC):
         """Fetch a single full record by its source record id. Optional."""
         return None
 
+    async def fulltext(self, record_id: str) -> str | None:
+        """Return the full plain text of a work, if this source can. Optional."""
+        return None
+
     async def health(self) -> bool:
         """Cheap liveness probe; override for a lighter check than a search."""
         try:
