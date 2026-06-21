@@ -9,9 +9,11 @@ import { ResultsSkeleton } from './Skeletons'
 export function LibraryView({
   collection,
   onOpen,
+  onCompose,
 }: {
   collection: Collection
   onOpen: (e: StoryEntity) => void
+  onCompose: () => void
 }) {
   const [stats, setStats] = useState<LibraryStats | null>(null)
   const [q, setQ] = useState('')
@@ -117,6 +119,18 @@ export function LibraryView({
             <strong>{items.length}</strong>건 표시
             {source && ` · ${source}`}
             {q.trim() && ` · "${q.trim()}"`}
+            {items.length > 0 && (
+              <button
+                className="chip"
+                style={{ marginLeft: 12 }}
+                onClick={() => {
+                  collection.addMany(items)
+                  onCompose()
+                }}
+              >
+                이 결과 전체 담아 집필 →
+              </button>
+            )}
           </div>
           {items.length === 0 ? (
             <p className="empty">해당하는 자료가 없습니다.</p>

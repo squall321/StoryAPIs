@@ -19,6 +19,8 @@ class ComposeOptions(BaseModel):
 class ComposeRequest(BaseModel):
     brief: str = Field(..., min_length=1, description="what the writer wants")
     entities: list[StoryEntity] = Field(default_factory=list)
+    # ids resolved from the local library (collected corpus) and merged in
+    entity_ids: list[str] = Field(default_factory=list)
     options: ComposeOptions = Field(default_factory=ComposeOptions)
 
 

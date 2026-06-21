@@ -127,7 +127,13 @@ export default function App() {
         />
       )}
 
-      {view === 'library' && <LibraryView collection={collection} onOpen={setActive} />}
+      {view === 'library' && (
+        <LibraryView
+          collection={collection}
+          onOpen={setActive}
+          onCompose={() => setView('compose')}
+        />
+      )}
 
       {view === 'compose' && (
         <ComposeView collection={collection} onDiscover={() => setView('discover')} />

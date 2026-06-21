@@ -29,15 +29,17 @@
 - ⬜ **지리/작명/세계관**: GeoNames, World Historical Gazetteer, Wiktionary 어원, GBIF
 - ⬜ 키 필요한 소스용 설정 키 배선(Europeana, Trove, Smithsonian…)
 
-## Phase 2 — 영속화 & 색인 (🚧 SQLite MVP 동작, 실제 1,498건 수집)
+## Phase 2 — 영속화 & 색인 (🚧 SQLite로 동작, 실측 3,088건 수집)
 
 실시간 호출만으로는 느리고 일부 소스는 덤프형이다. 정규화 저장 + 검색 가속.
 
-- ✅ **로컬 라이브러리(SQLite)** — `StoryEntity` 영속화(`backend/app/store/repository.py`)
-- ✅ **인제스트 파이프라인 + seed 플랜**(`backend/app/ingest/`, `scripts/ingest.py`)
-  — 조선왕조실록 + 신화/문학/유물 **실제 1,498건 수집**(전문 97건)
+- ✅ **로컬 라이브러리(SQLite + WAL)** — `StoryEntity` 영속화(`backend/app/store/repository.py`)
+- ✅ **인제스트 파이프라인 + seed 플랜**(`app/ingest/`, `scripts/ingest.py --deep`)
+  + **조선왕조실록 전권 크롤러**(`app/ingest/crawl.py`, `scripts/crawl.py`)
+  — **실측 3,088건 수집**(전문 463건; 조선왕조실록 284개 하위 페이지 전문 포함)
+- ✅ **CJK 전문검색** — FTS5 trigram(한글/한문 부분·본문 검색) + 짧은 쿼리 LIKE 폴백
 - ✅ **라이브러리 조회 API**: `GET /api/library/stats`, `GET /api/library/search`
-- ⬜ Postgres 이관 + 전문검색(`tsvector`/`pg_trgm`, CJK 형태소) 또는 OpenSearch
+- ⬜ Postgres 이관(프로덕션) — 현재는 SQLite FTS5로 CJK 검색 충족
 - ⬜ 응답 캐시 레이어, 덤프형 소스 대량 인제스트(Aozora/CBETA/Perseus 전권)
 
 ## Phase 3 — 의미 검색 & 엔티티 해소 (⬜)

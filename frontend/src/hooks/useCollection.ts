@@ -36,6 +36,16 @@ export function useCollection() {
     [],
   )
 
+  const addMany = useCallback(
+    (list: StoryEntity[]) =>
+      setItems((prev) => {
+        const seen = new Set(prev.map((e) => e.id))
+        const fresh = list.filter((e) => !seen.has(e.id))
+        return fresh.length ? [...prev, ...fresh] : prev
+      }),
+    [],
+  )
+
   const remove = useCallback(
     (id: string) => setItems((prev) => prev.filter((e) => e.id !== id)),
     [],
@@ -43,7 +53,7 @@ export function useCollection() {
 
   const clear = useCallback(() => setItems([]), [])
 
-  return { items, has, toggle, remove, clear, count: items.length }
+  return { items, has, toggle, addMany, remove, clear, count: items.length }
 }
 
 export type Collection = ReturnType<typeof useCollection>
