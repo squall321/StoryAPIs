@@ -47,9 +47,12 @@ class MetMuseumConnector(BaseConnector):
     )
 
     async def search(self, query: str, *, limit: int = 10) -> list[SearchHit]:
-        resp = await self.client.get(
-            f"{_BASE}/search", params={"q": query, "hasImages": "true"}
-        )
+        params = {"q": query, "hasImages": "true"}
+        resp = await self.client.get(f"{_BASE}/search", params=params)
+        # The Met rate-limits bursts with 403/429; back off once and retry.
+        if resp.status_code in (403, 429):
+            await asyncio.sleep(2.0)
+            resp = await self.client.get(f"{_BASE}/search", params=params)
         resp.raise_for_status()
         ids = (resp.json() or {}).get("objectIDs") or []
         ids = ids[:limit]

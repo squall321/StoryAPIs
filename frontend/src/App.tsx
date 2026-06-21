@@ -6,12 +6,13 @@ import { DetailReader } from './components/DetailReader'
 import { ResultsSkeleton } from './components/Skeletons'
 import { LicenseBadge } from './components/Badges'
 import { ComposeView } from './components/ComposeView'
+import { LibraryView } from './components/LibraryView'
 import { useCollection, type Collection } from './hooks/useCollection'
 import { typeLabel } from './meta'
 import './App.css'
 
 const EXAMPLES = ['gilgamesh', 'dragon', '조선', 'Odysseus', '구미호', 'samurai', 'angel']
-type View = 'discover' | 'sources' | 'compose'
+type View = 'discover' | 'library' | 'sources' | 'compose'
 
 export default function App() {
   const [view, setView] = useState<View>('discover')
@@ -79,6 +80,12 @@ export default function App() {
             발견
           </button>
           <button
+            className={`nav-tab ${view === 'library' ? 'on' : ''}`}
+            onClick={() => setView('library')}
+          >
+            보관함
+          </button>
+          <button
             className={`nav-tab ${view === 'sources' ? 'on' : ''}`}
             onClick={() => setView('sources')}
           >
@@ -119,6 +126,8 @@ export default function App() {
           }}
         />
       )}
+
+      {view === 'library' && <LibraryView collection={collection} onOpen={setActive} />}
 
       {view === 'compose' && (
         <ComposeView collection={collection} onDiscover={() => setView('discover')} />

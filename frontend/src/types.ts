@@ -128,3 +128,10 @@ export interface ComposeResponse {
   used_sources: UsedSource[]
   usage?: { input_tokens: number; output_tokens: number } | null
 }
+
+export interface LibraryStats {
+  total: number
+  with_fulltext: number
+  by_source: Record<string, number>
+  by_type: Record<string, number>
+}

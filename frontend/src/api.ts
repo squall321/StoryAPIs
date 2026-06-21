@@ -2,6 +2,7 @@ import type {
   ComposeOptions,
   ComposeResponse,
   FullTextResponse,
+  LibraryStats,
   SearchResponse,
   SourcesResponse,
   StoryEntity,
@@ -67,4 +68,23 @@ export function compose(
   signal?: AbortSignal,
 ): Promise<ComposeResponse> {
   return postJSON<ComposeResponse>('/compose', body, signal)
+}
+
+export function libraryStats(signal?: AbortSignal): Promise<LibraryStats> {
+  return getJSON<LibraryStats>('/library/stats', signal)
+}
+
+export function librarySearch(opts: {
+  q?: string
+  source?: string
+  type?: string
+  limit?: number
+  signal?: AbortSignal
+}): Promise<{ count: number; items: StoryEntity[] }> {
+  const params = new URLSearchParams()
+  if (opts.q) params.set('q', opts.q)
+  if (opts.source) params.set('source', opts.source)
+  if (opts.type) params.set('type', opts.type)
+  params.set('limit', String(opts.limit ?? 60))
+  return getJSON(`/library/search?${params.toString()}`, opts.signal)
 }
