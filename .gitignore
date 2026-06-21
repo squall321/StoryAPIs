@@ -10,6 +10,9 @@ env/
 .ruff_cache/
 *.sqlite3
 *.db
+*.db-wal
+*.db-shm
+*.db-journal
 
 # ---- Node / frontend ----
 node_modules/
