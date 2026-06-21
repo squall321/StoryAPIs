@@ -37,6 +37,15 @@
 `POST /api/compose`가 Opus 4.8로 출처를 인용한 새 이야기 초안을 생성한다
 (작문은 `STORYAPIS_ANTHROPIC_API_KEY` 필요).
 
+**실제 데이터 수집(인제스트)** — 라이브 게이트웨이를 넘어 로컬 SQLite에 정규화 저장:
+
+```bash
+cd backend && .venv/Scripts/python.exe scripts/ingest.py   # seed 플랜으로 대량 수집
+# → 조선왕조실록 + 신화/문학/유물 1,498건 수집 (data/library.db, gitignore됨)
+curl "http://localhost:8000/api/library/stats"
+curl "http://localhost:8000/api/library/search?q=실록&source=wikisource"
+```
+
 ```bash
 $ curl "http://localhost:8000/api/search?q=gilgamesh&limit=3"
 # → met / openlibrary / wikidata / gutendex 에서 정규화된 결과를 한 번에

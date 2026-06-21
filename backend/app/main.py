@@ -14,10 +14,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
-from app.api.routes import compose, health, search, sources
+from app.api.routes import compose, health, library, search, sources
 from app.config import get_settings
 from app.connectors.manager import ConnectorManager
 from app.services.composer import Composer
+from app.store.repository import Repository
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ async def lifespan(app: FastAPI):
     settings = get_settings()
     app.state.manager = ConnectorManager(settings)
     app.state.composer = Composer(settings)
+    app.state.repo = Repository(settings.library_db_path)
     try:
         yield
     finally:
@@ -54,6 +56,7 @@ def create_app() -> FastAPI:
     app.include_router(sources.router, prefix="/api")
     app.include_router(search.router, prefix="/api")
     app.include_router(compose.router, prefix="/api")
+    app.include_router(library.router, prefix="/api")
 
     @app.get("/")
     async def root() -> dict:
