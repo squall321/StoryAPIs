@@ -106,3 +106,25 @@ export interface FullTextResponse {
   length: number
   truncated: boolean
 }
+
+export interface ComposeOptions {
+  genre?: string
+  length: 'short' | 'medium' | 'long'
+  language: 'ko' | 'en'
+  tone?: string
+}
+
+export interface UsedSource {
+  id: string
+  title: string
+  source_name: string
+  source_url?: string | null
+}
+
+export interface ComposeResponse {
+  draft: string
+  model: string
+  language: string
+  used_sources: UsedSource[]
+  usage?: { input_tokens: number; output_tokens: number } | null
+}

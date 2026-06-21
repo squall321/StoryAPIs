@@ -5,11 +5,13 @@ import { EntityCard } from './components/EntityCard'
 import { DetailReader } from './components/DetailReader'
 import { ResultsSkeleton } from './components/Skeletons'
 import { LicenseBadge } from './components/Badges'
+import { ComposeView } from './components/ComposeView'
+import { useCollection, type Collection } from './hooks/useCollection'
 import { typeLabel } from './meta'
 import './App.css'
 
 const EXAMPLES = ['gilgamesh', 'dragon', '조선', 'Odysseus', '구미호', 'samurai', 'angel']
-type View = 'discover' | 'sources'
+type View = 'discover' | 'sources' | 'compose'
 
 export default function App() {
   const [view, setView] = useState<View>('discover')
@@ -21,6 +23,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null)
   const [active, setActive] = useState<StoryEntity | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const collection = useCollection()
 
   useEffect(() => {
     listSources()
@@ -81,6 +84,12 @@ export default function App() {
           >
             소스 <span className="nav-count">{sources.length}</span>
           </button>
+          <button
+            className={`nav-tab ${view === 'compose' ? 'on' : ''}`}
+            onClick={() => setView('compose')}
+          >
+            집필 <span className="nav-count">{collection.count}</span>
+          </button>
         </div>
       </nav>
 
@@ -97,6 +106,7 @@ export default function App() {
           loading={loading}
           error={error}
           onOpen={setActive}
+          collection={collection}
         />
       )}
 
@@ -110,7 +120,18 @@ export default function App() {
         />
       )}
 
-      {active && <DetailReader entity={active} onClose={() => setActive(null)} />}
+      {view === 'compose' && (
+        <ComposeView collection={collection} onDiscover={() => setView('discover')} />
+      )}
+
+      {active && (
+        <DetailReader
+          entity={active}
+          onClose={() => setActive(null)}
+          inCollection={collection.has(active.id)}
+          onToggleCollect={() => collection.toggle(active)}
+        />
+      )}
 
       <footer className="foot">
         세계의 역사·신화·문학을 모으는 이야기의 원천 ·{' '}
@@ -134,6 +155,7 @@ function Discover(props: {
   loading: boolean
   error: string | null
   onOpen: (e: StoryEntity) => void
+  collection: Collection
 }) {
   const {
     query,
@@ -147,6 +169,7 @@ function Discover(props: {
     loading,
     error,
     onOpen,
+    collection,
   } = props
 
   return (
@@ -221,7 +244,7 @@ function Discover(props: {
             <strong>{data.total_hits}</strong>건 · {data.elapsed_ms}ms · &ldquo;{data.query}&rdquo;
           </div>
           {data.results.map((r) => (
-            <SourceGroup key={r.source_id} result={r} onOpen={onOpen} />
+            <SourceGroup key={r.source_id} result={r} onOpen={onOpen} collection={collection} />
           ))}
           {data.total_hits === 0 && (
             <p className="empty">결과가 없습니다. 다른 검색어를 시도해 보세요.</p>
@@ -238,7 +261,15 @@ function Discover(props: {
   )
 }
 
-function SourceGroup({ result, onOpen }: { result: SourceResult; onOpen: (e: StoryEntity) => void }) {
+function SourceGroup({
+  result,
+  onOpen,
+  collection,
+}: {
+  result: SourceResult
+  onOpen: (e: StoryEntity) => void
+  collection: Collection
+}) {
   if (result.error) {
     return (
       <section className="source-group">
@@ -260,7 +291,13 @@ function SourceGroup({ result, onOpen }: { result: SourceResult; onOpen: (e: Sto
       </div>
       <div className="cards">
         {result.hits.map((h) => (
-          <EntityCard key={h.entity.id} hit={h} onOpen={(hit) => onOpen(hit.entity)} />
+          <EntityCard
+            key={h.entity.id}
+            hit={h}
+            onOpen={(hit) => onOpen(hit.entity)}
+            inCollection={collection.has(h.entity.id)}
+            onCollect={(e) => collection.toggle(e)}
+          />
         ))}
       </div>
     </section>

@@ -1,11 +1,32 @@
-import type { SearchHit } from '../types'
+import type { SearchHit, StoryEntity } from '../types'
 import { TypeBadge } from './Badges'
 import { Cover } from './Cover'
 
-export function EntityCard({ hit, onOpen }: { hit: SearchHit; onOpen: (hit: SearchHit) => void }) {
+export function EntityCard({
+  hit,
+  onOpen,
+  inCollection,
+  onCollect,
+}: {
+  hit: SearchHit
+  onOpen: (hit: SearchHit) => void
+  inCollection?: boolean
+  onCollect?: (entity: StoryEntity) => void
+}) {
   const { entity, snippet } = hit
   return (
     <article className="card">
+      {onCollect && (
+        <button
+          type="button"
+          className={`collect-btn ${inCollection ? 'on' : ''}`}
+          title={inCollection ? '수집함에서 빼기' : '수집함에 담기'}
+          aria-label="수집함에 담기"
+          onClick={() => onCollect(entity)}
+        >
+          {inCollection ? '✓' : '＋'}
+        </button>
+      )}
       <button
         type="button"
         className="card-hit"

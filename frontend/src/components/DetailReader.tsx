@@ -13,7 +13,17 @@ type FT =
 
 // The "에피소드" reader: a slide-in drawer that presents one StoryEntity
 // beautifully, lazily loading full text when the source can provide it.
-export function DetailReader({ entity, onClose }: { entity: StoryEntity; onClose: () => void }) {
+export function DetailReader({
+  entity,
+  onClose,
+  inCollection,
+  onToggleCollect,
+}: {
+  entity: StoryEntity
+  onClose: () => void
+  inCollection?: boolean
+  onToggleCollect?: () => void
+}) {
   const [ft, setFt] = useState<FT>({ status: 'idle' })
 
   useEffect(() => {
@@ -73,6 +83,15 @@ export function DetailReader({ entity, onClose }: { entity: StoryEntity; onClose
           <div className="reader-topline">
             <TypeBadge type={entity.type} />
             <span className="reader-source">{entity.provenance.source_name}</span>
+            {onToggleCollect && (
+              <button
+                type="button"
+                className={`reader-collect ${inCollection ? 'on' : ''}`}
+                onClick={onToggleCollect}
+              >
+                {inCollection ? '✓ 담음' : '＋ 수집함에 담기'}
+              </button>
+            )}
           </div>
 
           <h1 className="reader-title">{entity.title}</h1>
