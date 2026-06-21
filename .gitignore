@@ -42,3 +42,6 @@ Thumbs.db
 # ---- Logs ----
 *.log
 logs/
+
+# ---- Generated previews ----
+samples_preview.txt

@@ -25,20 +25,30 @@ DEFAULT_PREFIXES = [
 
 
 async def main() -> int:
-    prefixes = sys.argv[1:] or DEFAULT_PREFIXES
+    # Optional `lang=zh` / `--lang=ja` token selects the Wikisource edition.
+    lang = "ko"
+    prefixes: list[str] = []
+    for a in sys.argv[1:]:
+        if a.startswith("lang=") or a.startswith("--lang="):
+            lang = a.split("=", 1)[1]
+        else:
+            prefixes.append(a)
+    prefixes = prefixes or DEFAULT_PREFIXES
     cap = 2500
 
     settings = get_settings()
     manager = ConnectorManager(settings)
     repo = Repository(settings.library_db_path)
 
-    print(f"crawling {len(prefixes)} sources (cap {cap} each) ...")
+    print(f"crawling {len(prefixes)} sources from {lang}.wikisource (cap {cap}) ...")
     started = time.perf_counter()
     total = 0
     try:
         for prefix in prefixes:
             print(f"== {prefix} ==")
-            total += await crawl_wikisource(manager, repo, prefix=prefix, cap=cap)
+            total += await crawl_wikisource(
+                manager, repo, lang=lang, prefix=prefix, cap=cap
+            )
     finally:
         await manager.aclose()
 

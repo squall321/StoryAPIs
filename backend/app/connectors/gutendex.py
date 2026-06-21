@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import re
+
 from app.connectors.base import BaseConnector, Capability, ConnectorMeta, register
 from app.models.entities import (
     EntityType,
@@ -17,6 +19,20 @@ from app.models.entities import (
 )
 
 _BASE = "https://gutendex.com"
+
+_PG_START = re.compile(r"\*\*\*\s*START OF TH(E|IS) PROJECT GUTENBERG.*?\*\*\*", re.I | re.S)
+_PG_END = re.compile(r"\*\*\*\s*END OF TH(E|IS) PROJECT GUTENBERG.*?\*\*\*", re.I | re.S)
+
+
+def _strip_gutenberg(text: str) -> str:
+    """Drop the Project Gutenberg license header/footer, leaving the work itself."""
+    m = _PG_START.search(text)
+    if m:
+        text = text[m.end():]
+    m = _PG_END.search(text)
+    if m:
+        text = text[: m.start()]
+    return text.strip()
 
 
 @register
@@ -64,7 +80,7 @@ class GutendexConnector(BaseConnector):
             return None
         resp = await self.client.get(url)
         resp.raise_for_status()
-        return resp.text
+        return _strip_gutenberg(resp.text)
 
     def _to_entity(self, book: dict) -> StoryEntity:
         authors = book.get("authors", [])
