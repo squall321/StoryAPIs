@@ -19,15 +19,25 @@
 | 05 | 전문·세계관 구축 지식 | [research/05-specialized-worldbuilding.md](research/05-specialized-worldbuilding.md) | GeoNames, Natural Earth, NASA, GBIF, 어원/작명, CLDF 언어학 |
 | 06 | 세계 지역별 심화 | [research/06-world-regions-expanded.md](research/06-world-regions-expanded.md) | OpenITI, CBDB, Ganjoor, Qatar Digital Library, Trove (72개 소스) |
 
-## 구현 커넥터 현황
+## 구현 커넥터 현황 (12개 · 전부 무인증 · 라이브 검증)
 
-| 커넥터 | 소스 | 접근 | 인증 | 라이선스 | 상태 |
-|--------|------|------|------|----------|------|
-| `gutendex` | Project Gutenberg | REST JSON + 전문 다운로드 | 불필요 | Public Domain | ✅ 라이브 |
-| `met` | The Met Museum | REST JSON | 불필요 | CC0 | ✅ 라이브 |
-| `wikidata` | Wikidata | REST(wbsearchentities) | 불필요 | CC0 | ✅ 라이브 |
-| `openlibrary` | Open Library | REST JSON | 불필요 | CC0(data) | ✅ 라이브 |
-| `poetrydb` | PoetryDB | REST JSON | 불필요 | Public Domain | ✅ 라이브 |
+| 커넥터 | 소스 | 접근 | 라이선스 | 비고 |
+|--------|------|------|----------|------|
+| `gutendex` | Project Gutenberg | REST + 전문 | Public Domain | 전문(全文) |
+| `wikisource` | Wikisource (ko/en) | MediaWiki API | PD / CC BY-SA | **조선왕조실록** 1차 사료 전문 |
+| `met` | The Met Museum | REST JSON | CC0 | 이미지 |
+| `artic` | Art Institute of Chicago | REST + IIIF | CC0 | 이미지 |
+| `cleveland` | Cleveland Museum | REST JSON | CC0 | 이미지 |
+| `wikidata` | Wikidata | REST(wbsearchentities) | CC0 | 범분야 그래프 |
+| `wikipedia` | Wikipedia (en+ko) | MediaWiki API | CC BY-SA | 다국어 |
+| `sefaria` | Sefaria | REST + 전문 | per-text | 유대 경전 |
+| `suttacentral` | SuttaCentral | REST | CC0/CC-BY | 불교 경전 |
+| `alquran` | Quran (alquran.cloud) | REST | per-edition | 꾸란 |
+| `openlibrary` | Open Library | REST JSON | CC0(data) | 메타데이터 |
+| `poetrydb` | PoetryDB | REST JSON | Public Domain | 영시 전문 |
+
+> 창작: `POST /api/compose` 가 수집한 위 레코드들을 Claude(`claude-opus-4-8`)에 넘겨 새 이야기
+> 초안을 생성한다(출처 인용). `STORYAPIS_ANTHROPIC_API_KEY` 필요.
 
 ## 도입 우선순위 (라이선스·접근 난이도 기준)
 

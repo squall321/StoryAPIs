@@ -17,19 +17,25 @@
 1. **조사한다** — 접근 가능한 세계의 지식 DB/API를 체계적으로 카탈로그화 (`docs/research/`)
 2. **연결한다** — 각 소스를 *커넥터(Connector)* 로 감싸 하나의 통합 모델로 정규화
 3. **검색·추출한다** — 여러 소스를 동시에(federated) 검색하고 자료를 가져온다
-4. **창작에 쓴다** — 모은 자료를 워크스페이스에 담아 새 이야기 집필의 재료로 활용 *(로드맵)*
+4. **창작에 쓴다** — 모은 자료를 수집함에 담아 Claude가 새 이야기 초안을 짓는다 *(구현됨)*
 
-## 현재 동작하는 것 (v0.1)
+## 현재 동작하는 것 (v0.2)
 
-5개 무인증 공개 소스에 대한 **통합 연합 검색**이 실제로 작동한다:
+**12개 소스**에 대한 통합 연합 검색 + 전문(全文) 리더 + **수집함→집필(Claude 컴포저)**:
 
 | 소스 | 내용 | 라이선스 |
 |------|------|----------|
 | **Project Gutenberg** (Gutendex) | ~75,000권 퍼블릭 도메인 도서 전문(全文) | Public Domain |
-| **The Met Museum** | ~47만 점 미술·유물 (이미지 포함) | CC0 |
+| **Wikisource** | **조선왕조실록** 등 1차 사료 전문 (ko/en) | PD / CC BY-SA |
+| **The Met / Art Institute / Cleveland** | 미술·유물 (이미지 포함) | CC0 |
 | **Wikidata** | 인물·장소·사건·신·괴물·작품 — 범분야 지식그래프 | CC0 |
-| **Open Library** | ~4천만 도서 메타데이터·주제어 | CC0 (data) |
-| **PoetryDB** | 고전 영시 전문 | Public Domain |
+| **Wikipedia** | 다국어(한국어 포함) 전문 검색 | CC BY-SA |
+| **Sefaria / SuttaCentral / Quran** | 유대·불교·이슬람 경전 원전 | per-text |
+| **Open Library / PoetryDB** | 도서 메타데이터 · 고전 영시 전문 | CC0 / PD |
+
+검색해서 카드를 **수집함에 담고** → **집필** 탭에서 브리프를 적으면
+`POST /api/compose`가 Opus 4.8로 출처를 인용한 새 이야기 초안을 생성한다
+(작문은 `STORYAPIS_ANTHROPIC_API_KEY` 필요).
 
 ```bash
 $ curl "http://localhost:8000/api/search?q=gilgamesh&limit=3"

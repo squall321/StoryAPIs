@@ -15,19 +15,19 @@
 - ✅ 연합 검색 API(`/api/search`) + 소스 카탈로그 API
 - ✅ React+TS 검색 UI (소스 필터·카드·라이선스 배지)
 
-## Phase 1 — 소스 확장 (🚧 다음)
+## Phase 1 — 소스 확장 (🚧 대부분 완료, 5→12 커넥터)
 
 목표: "외국 DB 대폭 보강" 지시 반영 — 커넥터를 무인증 깨끗한 라이선스부터 폭넓게.
 
-- ⬜ **무인증 CC0/PD 우선**: Art Institute of Chicago, Cleveland Museum, Smithsonian(키),
-  Sefaria(유대 경전), SuttaCentral(불교 경전), alquran.cloud(꾸란), bible-api(성경)
-- ⬜ **지식그래프 심화**: Wikidata `wbgetentities`로 claims·relations 채우기(엔티티 그래프),
-  Wikipedia 요약(REST summary), DBpedia
-- ⬜ **한국 핵심**: 조선왕조실록(국사편찬위/NIKH), 한국고전종합DB(ITKC Open API),
-  공공데이터포털(국가유산청 등) — KOGL 라이선스 확인
-- ⬜ **고전·신화 원전**: Perseus(그리스·로마 TEI), ctext.org(한문 고전·山海經), GRETIL(산스크리트)
+- ✅ **미술관(CC0)**: Art Institute of Chicago, Cleveland Museum
+- ✅ **종교·신화 원전**: Sefaria(유대 경전), SuttaCentral(불교), alquran.cloud(꾸란)
+- ✅ **Wikipedia 다국어 검색**(EN+KO 병합) — 한국어 콘텐츠 확보
+- ✅ **한국 핵심**: 조선왕조실록 → ko/en **Wikisource** MediaWiki API로 1차 사료 전문 제공
+  (sillok.history.go.kr은 JS/AJAX라 공개 API 없음 → Wikisource 경유)
+- ⬜ **지식그래프 심화**: Wikidata `wbgetentities` relations, DBpedia
+- ⬜ **고전·신화 원전 추가**: Perseus(TEI), ctext.org(山海經), GRETIL(산스크리트)
 - ⬜ **지리/작명/세계관**: GeoNames, World Historical Gazetteer, Wiktionary 어원, GBIF
-- ⬜ 키 필요한 소스용 `available()`/설정 키 배선(Europeana, Trove, Smithsonian…)
+- ⬜ 키 필요한 소스용 설정 키 배선(Europeana, Trove, Smithsonian…)
 
 ## Phase 2 — 영속화 & 색인 (⬜)
 
@@ -44,15 +44,16 @@
 - ⬜ 엔티티 해소: 소스 간 동일 인물/장소 병합(Wikidata QID를 허브로)
 - ⬜ 관계 그래프 탐색 UI(인물↔사건↔장소 네트워크)
 
-## Phase 4 — 창작 워크스페이스 & 스토리 컴포저 (⬜)
+## Phase 4 — 창작 워크스페이스 & 스토리 컴포저 (🚧 MVP 동작)
 
 프로젝트의 최종 목적 — 모은 자료로 **새 이야기 짓기**.
 
-- ⬜ 컬렉션/보드: 검색 결과를 워크스페이스에 수집·태깅·메모
-- ⬜ `/api/compose`: 선택한 `StoryEntity` 묶음을 구조화 컨텍스트로 Claude(`claude-opus-4-8`)에
-  전달 → 세계관/캐릭터/플롯 초안 생성, **출처 각주 보존**
+- ✅ 수집함: 검색/상세에서 "담기" → localStorage 컬렉션
+- ✅ `/api/compose`: 수집한 `StoryEntity` 묶음 + 브리프를 Claude(`claude-opus-4-8`)에
+  전달 → 새 이야기 초안 생성, **출처 인용 보존** (키 없으면 503)
+- ✅ 집필 뷰: 브리프·옵션(분량/언어/장르/톤) + 초안 리더 + 인용 출처 패널
 - ⬜ 모티프 추출: 폭/원전에서 ATU 유형·Thompson 모티프 자동 태깅
-- ⬜ 집필 에디터(초안 + 인용 사이드패널)
+- ⬜ 컴포저 스트리밍, 메모/태깅, 초안 버전 관리, 컬렉션 서버 영속화
 
 ## Phase 5 — 운영 & 공개 (⬜)
 
