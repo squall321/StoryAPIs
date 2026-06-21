@@ -21,15 +21,21 @@ PICKS = [
     ("Gutenberg 전문", "gutendex", None),
     ("Quran (영역)", "alquran", None),
     ("Sefaria (유대 경전)", "sefaria", None),
+    ("山海經 (산해경·요괴/신수 도감)", "wikisource", "山海經"),
+    ("三國演義", "wikisource", "三國演義"),
+    ("西遊記", "wikisource", "西遊記"),
+    ("史記", "wikisource", "史記"),
     ("The Met (유물 메타데이터)", "met", None),
-    ("Wikidata (지식그래프)", "wikidata", "dragon"),
 ]
 
 
 def _pick(repo: Repository, source: str, query: str | None):
     items = repo.search(query, source_id=source, limit=40)
-    # prefer an item that actually carries full text
-    return next((e for e in items if e.full_text), items[0] if items else None)
+    # prefer the richest content page (longest full text), not an index/TOC
+    with_text = [e for e in items if e.full_text]
+    if with_text:
+        return max(with_text, key=lambda e: len(e.full_text or ""))
+    return items[0] if items else None
 
 
 def main() -> int:
