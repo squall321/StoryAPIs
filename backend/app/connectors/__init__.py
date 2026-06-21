@@ -16,6 +16,7 @@ from app.connectors import (  # noqa: F401  (imported for side-effect: registrat
     suttacentral,
     wikidata,
     wikipedia,
+    wikisource,
 )
 from app.connectors.base import (
     BaseConnector,
