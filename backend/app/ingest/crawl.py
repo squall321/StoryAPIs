@@ -84,8 +84,23 @@ async def crawl_wikisource(
         apcontinue = data.get("continue", {}).get("apcontinue")
         if not apcontinue:
             break
+
+    # Include the root page itself (many works are a single page with no subpages).
+    try:
+        resp = await client.get(
+            api, params={"action": "query", "titles": prefix, "format": "json"}
+        )
+        for pid, p in resp.json().get("query", {}).get("pages", {}).items():
+            if int(pid) > 0 and "missing" not in p:
+                pages.insert(0, (p["pageid"], p["title"]))
+    except Exception:  # noqa: BLE001
+        pass
+
     pages = pages[:cap]
-    log(f"  found {len(pages)} subpages under '{prefix}/'")
+    if not pages:
+        log(f"  '{prefix}': no pages found — skipped")
+        return 0
+    log(f"  '{prefix}': {len(pages)} pages")
 
     # 2. Fetch full text for each and store in batches.
     stored = 0
