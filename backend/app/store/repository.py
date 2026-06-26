@@ -164,10 +164,14 @@ class Repository:
             clauses.append("e.type = ?")
             params.append(type_)
         params.append(limit)
+        # bm25 column weights (id, title, summary, full_text): weight the title
+        # heavily so a search for a work's name returns *that work*, not a
+        # document that merely mentions it in the body.
         sql = (
             "SELECT e.data FROM entities_fts "
             "JOIN entities e ON e.id = entities_fts.id "
-            f"WHERE {' AND '.join(clauses)} ORDER BY rank LIMIT ?"
+            f"WHERE {' AND '.join(clauses)} "
+            "ORDER BY bm25(entities_fts, 0.0, 12.0, 4.0, 1.0) LIMIT ?"
         )
         with self._conn() as c:
             rows = c.execute(sql, params).fetchall()
@@ -191,10 +195,20 @@ class Repository:
             clauses.append("type = ?")
             params.append(type_)
         where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+        # Rank title matches first, then summary, then body-only — same intent
+        # as the FTS title boost, for short (<3 char) queries.
+        order = ""
+        if qs:
+            like = f"%{qs}%"
+            order = (
+                " ORDER BY CASE WHEN title LIKE ? THEN 0 "
+                "WHEN summary LIKE ? THEN 1 ELSE 2 END"
+            )
+            params += [like, like]
         params.append(limit)
         with self._conn() as c:
             rows = c.execute(
-                f"SELECT data FROM entities{where} LIMIT ?", params
+                f"SELECT data FROM entities{where}{order} LIMIT ?", params
             ).fetchall()
         return [StoryEntity.model_validate_json(r["data"]) for r in rows]
 
