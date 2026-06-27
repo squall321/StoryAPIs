@@ -12,6 +12,7 @@ import csv
 import io
 import re
 import zipfile
+from collections import defaultdict
 from collections.abc import Callable
 
 from app.connectors.manager import ConnectorManager
@@ -29,10 +30,19 @@ _LICENSE = License(name="Public Domain (Japan)", commercial_ok=True, attribution
 
 # Famous public-domain authors (surname as it appears in the index 姓 column).
 DEFAULT_AUTHORS = [
-    "夏目", "芥川", "太宰", "宮沢", "森", "樋口", "泉", "中島",
-    "梶井", "国木田", "新美", "坂口", "小泉", "堀", "宮本", "中原",
-    "石川", "有島", "岡本", "豊島",
+    "夏目", "芥川", "太宰", "宮沢", "中島", "梶井", "坂口", "樋口",
+    "泉", "小泉", "堀", "有島", "国木田", "新美", "森", "中原",
 ]
+
+# Masterpieces guaranteed in regardless of the per-author cap.
+FAMOUS_TITLES = {
+    "走れメロス", "羅生門", "吾輩は猫である", "坊っちゃん", "こころ",
+    "山月記", "注文の多い料理店", "銀河鉄道の夜", "檸檬", "地獄変",
+    "河童", "人間失格", "斜陽", "蜘蛛の糸", "セロ弾きのゴーシュ",
+    "風の又三郎", "よだかの星", "舞姫", "高瀬舟", "たけくらべ",
+    "夢十夜", "三四郎", "それから", "門", "杜子春", "トロッコ",
+    "ヴィヨンの妻", "津軽", "casket",
+}
 
 
 def _clean(text: str) -> str:
@@ -94,7 +104,8 @@ async def ingest_aozora(
     repo: Repository,
     *,
     authors: list[str] | None = None,
-    cap: int = 400,
+    per_author: int = 45,
+    cap: int = 1600,
     log: Callable[[str], None] = print,
 ) -> int:
     authors = authors or DEFAULT_AUTHORS
@@ -107,20 +118,35 @@ async def ingest_aozora(
     csv_text = zf.read(zf.namelist()[0]).decode("utf-8-sig")
     rows = list(csv.reader(io.StringIO(csv_text)))[1:]
 
+    def ok(r: list[str]) -> bool:
+        return len(r) >= 51 and r[10] == "なし" and bool(r[45])
+
     picked: list[list[str]] = []
+    seen: set[str] = set()
+
+    # 1. guaranteed masterpieces (any allowed author)
     for r in rows:
-        if len(r) < 51:
-            continue
-        if r[10] != "なし":  # 作品著作権フラグ: keep only public-domain works
-            continue
-        if r[15] not in authors:
-            continue
-        if not r[45]:
-            continue
-        picked.append(r)
-        if len(picked) >= cap:
-            break
-    log(f"selected {len(picked)} public-domain works (of {len(rows)} total)")
+        if ok(r) and r[1] in FAMOUS_TITLES and r[0] not in seen:
+            picked.append(r)
+            seen.add(r[0])
+
+    # 2. balanced per-author fill so no single author dominates
+    by_author: dict[str, list[list[str]]] = defaultdict(list)
+    for r in rows:
+        if ok(r) and r[15] in authors:
+            by_author[r[15]].append(r)
+    for surname in authors:
+        n = 0
+        for r in by_author[surname]:
+            if r[0] in seen:
+                continue
+            picked.append(r)
+            seen.add(r[0])
+            n += 1
+            if n >= per_author:
+                break
+    picked = picked[:cap]
+    log(f"selected {len(picked)} public-domain works from {len(by_author)} authors")
 
     stored = 0
     batch: list[StoryEntity] = []
